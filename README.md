@@ -14,7 +14,7 @@ This application combines state-of-the-art NLP techniques to provide accurate an
 - **Sentence-Level Processing**: Operates at the sentence level for granular context extraction
 
 ### 📊 Table Extraction & Processing
-- **YOLO-Based Detection**: Automatically detects tables in PDFs using a specialized YOLO model
+- **YOLO-Based Detection**: Automatically detects tables in PDFs using a specialized YOLO model from `foduucom/table-detection-and-extraction`
 - **Coordinate-Based Filtering**: Separates table content from regular text to avoid duplication
 - **Structured Formatting**: Converts tables into LLM-friendly text format with clear structure
 
@@ -113,7 +113,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-**Note**: The `requirements.txt` includes PyTorch with CUDA 12.6 support. Adjust the PyTorch version if you have a different CUDA version:
+**Note**: The `requirements.txt` includes PyTorch 2.7.1 with CUDA 12.6 support (`torch==2.7.1+cu126`). Adjust the PyTorch version if you have a different CUDA version:
 
 ```bash
 # For CUDA 11.8
@@ -220,11 +220,16 @@ top_k_sentences=50     # Final context size after reranking
 
 ### Hybrid Retrieval Strategy
 
-The system uses **Reciprocal Rank Fusion (RRF)** to combine:
+The system uses a **Reciprocal Rank Fusion (RRF)** variant to combine:
 - **BM25 scores**: Captures exact keyword matches
 - **Dense similarity**: Captures semantic similarity
 
-Formula: `score = 1/(60 + rank_bm25) + 1/(60 + rank_dense)`
+The fusion formula combines rankings from both methods:
+```
+score = 1/(60 + rank_bm25) + 1/(60 + rank_dense)
+```
+
+This approach ensures that documents ranking high in either method receive strong scores, while documents ranking high in both methods are prioritized.
 
 ### Context Window Management
 
